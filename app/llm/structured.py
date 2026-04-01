@@ -1,7 +1,11 @@
+from typing import Any
+
+
 import json
 
 from pydantic import BaseModel
 from .base import BaseLLMClient
+from app.schemas.agent import TaskClassification
 
 
 def _parse_llm_response(response: str, model_class: type[BaseModel]) -> BaseModel:
@@ -32,10 +36,10 @@ async def get_structured_response(
 ) -> BaseModel:
     """Get a structured response from the LLM."""
 
-    history = [messages]
+    history = list[dict](messages)
 
     for retry_iter in range(max_retries + 1):
-        response = await client.chat(messages, system)
+        response = await client.chat(history, system)
 
         try:
             return _parse_llm_response(response, response_model)

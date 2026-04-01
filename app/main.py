@@ -2,6 +2,7 @@ from fastapi import Body, FastAPI
 
 from app.llm.factory import get_llm_client
 from app.llm.structured import get_structured_response
+from app.schemas.agent import TaskClassification
 
 app = FastAPI()
 
@@ -32,4 +33,4 @@ async def chat(model: str, messages: list[dict] = Body(...), system: str = Body(
         The response from the LLM.
     """
     llm_client = get_llm_client(model)
-    return await get_structured_response(llm_client, messages, system, llm_client)
+    return await get_structured_response(llm_client, messages, system, TaskClassification)
