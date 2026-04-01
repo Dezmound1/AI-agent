@@ -1,6 +1,7 @@
 from fastapi import Body, FastAPI
 
 from app.llm.factory import get_llm_client
+from app.llm.structured import get_structured_response
 
 app = FastAPI()
 
@@ -13,5 +14,22 @@ def read_root():
 
 @app.post("/{model}/chat")
 async def chat(model: str, messages: list[dict] = Body(...), system: str = Body(...)):
+    """
+    Chat with the LLM.
+    
+    Parameters
+    ----------
+    model: str
+        The name of the LLM model to use.
+    messages: list[dict]
+        The messages to send to the LLM.
+    system: str
+        The system prompt to send to the LLM.
+
+    Returns
+    -------
+    dict
+        The response from the LLM.
+    """
     llm_client = get_llm_client(model)
-    return await llm_client.chat(messages, system)
+    return await get_structured_response(llm_client, messages, system, llm_client)
