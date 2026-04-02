@@ -1,0 +1,35 @@
+version: "3"
+
+vars:
+  COMPOSE: docker compose
+
+tasks:
+  default:
+    desc: Build images and start the stack (foreground; Ctrl+C to stop)
+    cmds:
+      - task: run-build
+
+  build:
+    desc: Build images (docker compose build)
+    cmds:
+      - "{{.COMPOSE}} build"
+
+  run:
+    desc: Start the stack without rebuilding (foreground)
+    cmds:
+      - "{{.COMPOSE}} up"
+
+  run-build:
+    desc: Start the stack and rebuild images (foreground)
+    cmds:
+      - "{{.COMPOSE}} up --build"
+
+  up:
+    desc: Start the stack in the background (-d)
+    cmds:
+      - "{{.COMPOSE}} up -d"
+
+  down:
+    desc: Stop containers and remove the default network
+    cmds:
+      - "{{.COMPOSE}} down"

@@ -9,6 +9,7 @@ dependencies = [
     "anthropic>=0.86.0",
     "asyncpg>=0.31.0",
     "fastapi[standard]>=0.135.2",
+    "go-task-bin>=3.49.1",
     "httpx>=0.28.1",
     "psycopg[binary]>=3.3.3",
     "pydantic>=2.0",

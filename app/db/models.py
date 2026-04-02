@@ -31,6 +31,10 @@ class CommentSentiment(str, enum.Enum):
     MIXED = "mixed"
 
 
+def _enum_values(enum_cls: type[enum.Enum]) -> list[str]:
+    return [m.value for m in enum_cls]
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -62,10 +66,20 @@ class Comment(Base):
     )
     body: Mapped[str] = mapped_column(Text())
     character: Mapped[CommentCharacter] = mapped_column(
-        SAEnum(CommentCharacter, name="comment_character", native_enum=True),
+        SAEnum(
+            CommentCharacter,
+            name="comment_character",
+            native_enum=True,
+            values_callable=_enum_values,
+        ),
     )
     sentiment: Mapped[CommentSentiment] = mapped_column(
-        SAEnum(CommentSentiment, name="comment_sentiment", native_enum=True),
+        SAEnum(
+            CommentSentiment,
+            name="comment_sentiment",
+            native_enum=True,
+            values_callable=_enum_values,
+        ),
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

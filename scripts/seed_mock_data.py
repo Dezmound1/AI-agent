@@ -6,6 +6,13 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
+
+# При `python scripts/seed_mock_data.py` в sys.path попадает только .../scripts, не корень проекта.
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 import uuid
 
 from sqlalchemy import create_engine, func, select

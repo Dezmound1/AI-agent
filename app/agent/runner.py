@@ -46,7 +46,7 @@ class AgentRunner:
                 return {"reply": response["content"], "tools_used": tools_used}
             
             tools_used.append(response["name"])
-            result = await self._registry.execute_tool(response["input"], session=self._session)
+            result = await self._registry.execute_tool(response["name"], response["input"], session=self._session)
 
             history_entries = self._llm_client.format_tool_result(response, result)
             messages.extend(history_entries)
