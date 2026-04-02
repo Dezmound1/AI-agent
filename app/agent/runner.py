@@ -20,7 +20,7 @@ class AgentRunner:
         self._registry = registry
         self._session = session
     
-    async def run(self, message: str) -> str:
+    async def run(self, message: str, system: str = "") -> str:
         """
         Run the agent.
         
@@ -28,7 +28,9 @@ class AgentRunner:
         ----------
         message: str
             The message to run the agent.
-            
+        system: str
+            The system prompt to use in the agent.
+        
         Returns
         -------
         str
@@ -39,7 +41,7 @@ class AgentRunner:
         tools_used = []
 
         for _ in range(5):
-            response = await self._llm_client.chat_with_tools(messages, tools=self._registry.schemas)
+            response = await self._llm_client.chat_with_tools(messages, system, tools=self._registry.schemas)
 
 
             if response["type"] == "text":
