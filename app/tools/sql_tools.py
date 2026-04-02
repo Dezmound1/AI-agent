@@ -42,19 +42,23 @@ async def execute_sql(query: str, limit: int = 50, *, session: AsyncSession) -> 
     dict
         The result of the query.
     """
-    query = query.strip()
+    query = query.strip().rstrip(";")
 
-    if not query:
-        return {"error": "Query can't be empty"}
-    if not query.startswith("SELECT"):
+    if ";" in query:
+        return {"error": "Only one SQL statement allowed"}
+
+    if not query.upper().startswith("SELECT"):
         return {"error": "Only SELECT queries are allowed"}
 
-    query_text = f"{query} LIMIT {limit}"
-    result = await session.execute(text(query_text))
-    rows = [
-        dict(row._mapping) for row in result.fetchall()
-    ]
-    return {"result": rows}
+    if "LIMIT" not in query.upper():
+        query = f"{query} LIMIT {limit}"
+
+    try:
+        result = await session.execute(text(query))
+        rows = [dict(row._mapping) for row in result.fetchall()]
+        return {"rows": rows, "count": len(rows)}
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @registry.register_tool(
@@ -72,3 +76,27 @@ async def list_tables(*, session: AsyncSession) -> dict:
     )
     tables = [row[0] for row in result.fetchall()]
     return {"tables": tables}
+
+
+@registry.register_tool(
+    name="describe_table",
+    description="Показать колонки и типы данных таблицы",
+    schema={
+        "type": "object",
+        "properties": {
+            "table_name": {"type": "string", "description": "Имя таблицы"}
+        },
+        "required": ["table_name"],
+    },
+)
+async def describe_table(table_name: str, *, session: AsyncSession) -> dict:
+    result = await session.execute(
+        text(
+            "SELECT column_name, data_type, is_nullable "
+            "FROM information_schema.columns "
+            "WHERE table_name = :t"
+        ),
+        {"t": table_name},
+    )
+    columns = [dict(row._mapping) for row in result.fetchall()]
+    return {"table": table_name, "columns": columns}
