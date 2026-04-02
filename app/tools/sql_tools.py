@@ -6,13 +6,16 @@ from app.tools.registry import ToolRegistry
 registry = ToolRegistry()
 
 
-@registry.register(
+@registry.register_tool(
     name="execute_sql",
     description="Выполнить SQL SELECT запрос. Только чтение, не модификация данных.",
     schema={
         "type": "object",
         "properties": {
-            "query": {"type": "string", "description": "SQL SELECT запрос"},
+            "query": {
+                "type": "string", 
+                "description": "SQL SELECT запрос",
+            },
             "limit": {
                 "type": "integer",
                 "description": "Максимум строк (по умолчанию 50)",
@@ -40,7 +43,7 @@ async def execute_sql(query: str, limit: int = 50, *, session: AsyncSession) -> 
         The result of the query.
     """
     query = query.strip()
-    
+
     if not query:
         return {"error": "Query can't be empty"}
     if not query.startswith("SELECT"):

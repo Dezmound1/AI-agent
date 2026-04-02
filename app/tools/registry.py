@@ -31,4 +31,5 @@ class ToolRegistry:
 
     @property
     def schemas(self) -> list[dict]:
+        """Get the schemas of the tools."""
         return self._schemas

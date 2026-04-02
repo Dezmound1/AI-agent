@@ -9,8 +9,7 @@ from app.db.session import get_session
 from app.llm.factory import get_llm_client
 from app.llm.structured import get_structured_response
 from app.schemas.agent import TaskClassification
-from app.tools.registry import ToolRegistry
-from app.config import _configure_logging
+from app.tools.sql_tools import registry
 
 app = FastAPI()
 
@@ -94,6 +93,5 @@ async def agent_endpoint(
         The response from the agent.
     """
     client = get_llm_client(provider)
-    registry = ToolRegistry()
     runner = AgentRunner(client, registry, session)
     return {"response": await runner.run(message)}

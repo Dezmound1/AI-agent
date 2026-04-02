@@ -45,14 +45,21 @@ class Settings(BaseSettings):
 
     anthropic_api_key: str | None = None
 
+    seed_mock_on_start: bool = True
+
     @property
     def database_url(self) -> str:
         """Get the database URL."""
-        print(self.postgres_user, self.postgres_password, self.postgres_host, self.postgres_port, self.postgres_db)
         return (
             f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}"
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         )
+
+    @property
+    def database_url_sync(self) -> str:
+        """Синхронный URL для Alembic/сидов (psycopg)."""
+        u = self.database_url
+        return u.replace("postgresql+asyncpg://", "postgresql+psycopg://", 1)
 
 
 _configure_logging()

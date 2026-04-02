@@ -38,3 +38,17 @@ class BaseLLMClient(abc.ABC):
             The tools to use in the LLM.
         """
         pass
+
+    @abc.abstractmethod
+    def format_tool_result(self, response: dict, result: str) -> list[dict]:
+        """
+        Format the tool result.
+        
+        Parameters
+        ----------
+        response: dict
+            The response from the LLM.
+        result: str
+            The result of the tool.
+        """
+        pass
