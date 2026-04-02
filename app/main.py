@@ -13,11 +13,11 @@ def read_root():
     return {"message": "Hello from ai-agent"}
 
 
-@app.post("/{model}/chat")
-async def chat(model: str, messages: list[dict] = Body(...), system: str = Body(...)):
+@app.post("/chat")
+async def chat(model: str = Body(default="ollama"), message: str = Body(...)):
     """
     Chat with the LLM.
-    
+
     Parameters
     ----------
     model: str
@@ -33,4 +33,8 @@ async def chat(model: str, messages: list[dict] = Body(...), system: str = Body(
         The response from the LLM.
     """
     llm_client = get_llm_client(model)
-    return await get_structured_response(llm_client, messages, system, TaskClassification)
+    system = "You are a helpful assistant and python expert developer with 10 years of experience."
+    messages = [{"role": "user", "prompt": message}]
+    return await get_structured_response(
+        llm_client, messages, system, TaskClassification
+    )

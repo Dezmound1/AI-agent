@@ -7,7 +7,6 @@ class TaskClassification(BaseModel):
 
 class AgentDecision(BaseModel):
     """Schema for agent decision."""
-    reasoning: str
-    action: str
-    params: dict
-
+    reasoning: str = Field(description="Логика принятия решения")
+    action: str = Field(description="Действие: create, update, delete")
+    params: dict = Field(description="Параметры действия")

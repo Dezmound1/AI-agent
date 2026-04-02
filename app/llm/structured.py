@@ -36,7 +36,7 @@ async def get_structured_response(
 ) -> BaseModel:
     """Get a structured response from the LLM."""
 
-    history = list[dict](messages)
+    history = list(messages)
 
     for retry_iter in range(max_retries + 1):
         response = await client.chat(history, system)
