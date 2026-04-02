@@ -17,7 +17,6 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "httpx" },
     { name = "pydantic" },
-    { name = "ruff" },
     { name = "sqlalchemy" },
     { name = "uvicorn" },
 ]
@@ -25,6 +24,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
+    { name = "ruff" },
 ]
 
 [package.metadata]
@@ -34,13 +34,15 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.135.2" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pydantic", specifier = ">=2.0" },
-    { name = "ruff", specifier = ">=0.15.8" },
     { name = "sqlalchemy", specifier = ">=2.0.48" },
     { name = "uvicorn", specifier = ">=0.42.0" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=9.0.2" }]
+dev = [
+    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "ruff", specifier = ">=0.15.8" },
+]
 
 [[package]]
 name = "alembic"

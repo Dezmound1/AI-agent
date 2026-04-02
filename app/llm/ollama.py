@@ -4,7 +4,7 @@ import httpx
 from .base import BaseLLMClient
 
 DEFAULT_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
-DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1")
+DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:8b")
 
 
 class LLMOllama(BaseLLMClient):
