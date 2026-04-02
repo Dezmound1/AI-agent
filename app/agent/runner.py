@@ -40,7 +40,7 @@ class AgentRunner:
 
         tools_used = []
 
-        for _ in range(5):
+        for _ in range(10):
             response = await self._llm_client.chat_with_tools(messages, system, tools=self._registry.schemas)
 
 

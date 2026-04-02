@@ -58,6 +58,7 @@ async def execute_sql(query: str, limit: int = 50, *, session: AsyncSession) -> 
         rows = [dict(row._mapping) for row in result.fetchall()]
         return {"rows": rows, "count": len(rows)}
     except Exception as e:
+        await session.rollback()
         return {"error": str(e)}
 
 

@@ -98,17 +98,20 @@ async def agent_endpoint(
         You can call tools:
         - `list_tables` — list base tables when the schema is unknown.
         - `describe_table` — get column names and types before writing queries.
-        - `execute_sql` — run a single read-only query. Parameters: `query` (required, one SELECT only) and optional `limit` (default 50). Do not put a semicolon; do not send multiple statements.
+        - `execute_sql` — run a single read-only query.
 
         Rules:
-        1. Prefer `list_tables` or `describe_table` before guessing table/column names.
-        2. Only SELECT (and read-only constructs the tool allows). Never ask to INSERT, UPDATE, DELETE, DDL, or admin commands.
-        3. Use clear, valid PostgreSQL. Qualify names if needed (`public.table_name`).
-        4. After tool results, answer in natural language: summarize findings, show key numbers or rows briefly, and mention row counts when useful.
-        5. If a tool returns `error`, explain it briefly and suggest a fix (e.g. fix column name, simplify query).
-        6. If the user question does not need the database, answer directly without tools.
+        1. ALWAYS call list_tables and describe_table before writing SQL.
+        2. ALWAYS execute SQL through execute_sql tool. NEVER write SQL in your text response.
+        3. If you need multiple queries — call execute_sql multiple times, one query per call.
+        4. Only SELECT queries. Never INSERT, UPDATE, DELETE, DDL.
+        5. After getting results, summarize findings in natural language with key numbers.
+        6. If a tool returns error, fix the query and try again.
 
-        Be concise and accurate.
+        IMPORTANT: You must CALL tools to get data. Do not show SQL code to the user — execute it.
+        CRITICAL: Your answer MUST be based ONLY on data returned by tools.
+        Do not invent names, numbers, or text that was not in the tool results.
+        If execute_sql returned specific rows — quote them exactly, do not paraphrase.
         """.strip()
     client = get_llm_client(provider)
     runner = AgentRunner(client, registry, session)

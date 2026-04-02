@@ -109,7 +109,6 @@ class LLMOllama(BaseLLMClient):
 
         message = data["message"]
 
-
         if message.get("tool_calls"):
             tool_call = message["tool_calls"][0]
             func = tool_call["function"]
