@@ -1,21 +1,35 @@
 import json
+
 from fastapi import Body, FastAPI
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.agent.runner import AgentRunner
+from app.db.session import get_session
 
 from app.llm.factory import get_llm_client
 from app.llm.structured import get_structured_response
 from app.schemas.agent import TaskClassification
+from app.tools.registry import ToolRegistry
+from app.config import _configure_logging
 
 app = FastAPI()
 
 
-@app.get("/")
-def read_root():
-
-    return {"message": "Hello from ai-agent"}
-
-
 @app.post("/chat")
-async def chat(model: str = Body(default="ollama"), message: str = Body(...)):
+async def chat(
+    model: str = Body(default="ollama"),
+    message: str = Body(...),
+    system: str = Body(default=""),
+):
+    """Свободный чат — модель отвечает текстом."""
+    client = get_llm_client(model)
+    messages = [{"role": "user", "content": message}]
+    reply = await client.chat(messages, system)
+    return {"reply": reply, "provider": model}
+
+
+@app.post("/classify")
+async def classify(model: str = Body(default="ollama"), message: str = Body(...)):
     """
     Chat with the LLM.
 
@@ -49,7 +63,37 @@ async def chat(model: str = Body(default="ollama"), message: str = Body(...)):
     Output: {{"category": "feature", "priority": "low", "summary": "Request for PDF export of reports"}}
     """
 
-    messages = [{"role": "user", "prompt": message}]
-    return await get_structured_response(
+    messages = [{"role": "user", "content": message}]
+    result = await get_structured_response(
         llm_client, messages, system, TaskClassification
     )
+    return result.model_dump()
+
+
+@app.post("/agent")
+async def agent_endpoint(
+    message: str = Body(...),
+    provider: str = Body(default="ollama"),
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    """
+    Run the agent.
+    
+    Parameters
+    ----------
+    message: str
+        The message to run the agent.
+    provider: str
+        The provider of the LLM.
+    session: AsyncSession
+        The session of the database.
+        
+    Returns
+    -------
+    dict
+        The response from the agent.
+    """
+    client = get_llm_client(provider)
+    registry = ToolRegistry()
+    runner = AgentRunner(client, registry, session)
+    return {"response": await runner.run(message)}

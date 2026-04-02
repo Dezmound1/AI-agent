@@ -1,10 +1,10 @@
-import os
+import logging
 import httpx
 
+from app.config import settings
 from .base import BaseLLMClient
 
-DEFAULT_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
-DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:8b")
+logger = logging.getLogger(__name__)
 
 
 class LLMOllama(BaseLLMClient):
@@ -12,12 +12,14 @@ class LLMOllama(BaseLLMClient):
 
     def __init__(
         self,
-        base_url: str = DEFAULT_BASE_URL,
-        model: str = DEFAULT_MODEL,
-    ) -> None:  
+        base_url: str | None = None,
+        model: str | None = None,
+    ) -> None:
         """Initialize the LLM client."""
-        self._base_url = base_url.rstrip("/")
-        self._model = model
+
+        url = base_url or settings.ollama_base_url
+        self._base_url = url.rstrip("/")
+        self._model = model or settings.ollama_model
         self._timeout = httpx.Timeout(10.0, read=120.0)
 
     async def chat(self, messages: list[dict], system: str = "") -> str:
@@ -38,5 +40,9 @@ class LLMOllama(BaseLLMClient):
             )
             response.raise_for_status()
             data = response.json()
-
+        logger.warning(f"Ollama thinks: {data['message']['thinking']}")
         return data["message"]["content"]
+
+    async def chat_with_tools(self, messages: list[dict], system: str = "", tools: list[dict] = []) -> str:
+        """Chat with Ollama with tools."""
+        ... 

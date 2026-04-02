@@ -1,12 +1,7 @@
-from typing import Any
-
-
 import json
 
 from pydantic import BaseModel
 from .base import BaseLLMClient
-from app.schemas.agent import TaskClassification
-
 
 def _parse_llm_response(response: str, model_class: type[BaseModel]) -> BaseModel:
     """
@@ -28,6 +23,7 @@ def _parse_llm_response(response: str, model_class: type[BaseModel]) -> BaseMode
     if json_response.startswith("```"):
         json_response = json_response.split("\n", 1)[1]
         json_response = json_response.rsplit("```", 1)[0]
+    
     return model_class.model_validate(json.loads(json_response))
 
 
